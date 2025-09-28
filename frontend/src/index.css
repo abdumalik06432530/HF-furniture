@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global reset: zero margins/padding as requested */
+*{ box-sizing: border-box; margin:0; padding:0; }
+html, body, #root { height:100%; }
+
+/* Keep Tailwind but ensure a sensible font stack */
+*{ font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+
+.prata-regular { font-family: 'Prata', serif; font-weight:400; font-style:normal; }
+
+/* Hide scrollbar in Webkit (optional) */
+::-webkit-scrollbar{ display: none; }
+
+/* Active link tweak for small screens */
+@media (max-width:640px) {
+  a.active{ background-color: black; color: white; }
+}
+
+/* Gap utilities */
+.gap-0{ gap: 0 !important; }
+.gap-sm{ gap: .25rem !important; }
+.gap-md{ gap: .5rem !important; }
+.gap-lg{ gap: 1rem !important; }
+
+/* Dark mode / theming variables when `dark` class is on <html> */
+:root {
+  /* palette */
+  --bg: #ffffff;            /* page background */
+  --card: #ffffff;          /* card / surface */
+  --surface-1: #f8fafc;     /* subtle surface */
+  --surface-2: #f1f5f9;
+  --surface-3: #e5e7eb;
+  --text: #111827;         /* gray-900 */
+  --muted: #6b7280;        /* gray-500 */
+  --accent: #2563eb;       /* blue-600 */
+  --border: rgba(15,23,42,0.06);
+}
+
+.dark {
+  --bg: #071026;           /* page background (darker) */
+  --card: #0f1724;         /* main card surface */
+  --surface-1: #0b1220;    /* subtle dark surface */
+  --surface-2: #0f1724;
+  --surface-3: #111827;
+  --text: #e6eef8;         /* near-white */
+  --muted: #9ca3af;
+  --accent: #60a5fa;       /* light blue */
+  --border: rgba(255,255,255,0.06);
+}
+
+/* Apply globals */
+html, body { background-color: var(--bg); color: var(--text); }
+
+/* Map common Tailwind utility classes to theme-aware variables so existing markup adapts automatically */
+.bg-white { background-color: var(--card) !important; }
+.bg-gray-50 { background-color: var(--surface-1) !important; }
+.bg-gray-100 { background-color: var(--surface-2) !important; }
+.bg-gray-200 { background-color: var(--surface-3) !important; }
+.bg-black { background-color: #000 !important; } /* keep explicit black where intentionally used (e.g., footer) */
+
+.text-gray-900, .text-gray-800, .text-gray-700 { color: var(--text) !important; }
+.text-gray-500 { color: var(--muted) !important; }
+.text-blue-600 { color: var(--accent) !important; }
+
+.bg-blue-50 { background-color: rgba(96,165,250,0.06) !important; }
+.hover\:bg-blue-50:hover { background-color: rgba(96,165,250,0.08) !important; }
+
+.border-gray-100, .border-gray-200, .border-gray-300 { border-color: var(--border) !important; }
+.hover\:bg-gray-50:hover { background-color: var(--surface-1) !important; }

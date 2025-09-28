@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hamad Furniture</title>
+
+    <!-- Tailwind CSS CDN (for demonstration) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom styles -->
+    <style>
+      /* Global styles for consistency */
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        transition: background-color 0.3s ease;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body class="bg-white text-gray-900 font-sans antialiased">
+    <!-- App Root -->
+    <div id="root" className="px-4 sm:px-8 lg:px-12 py-8 min-h-screen flex flex-col">
+      <!-- React app will mount here -->
+    </div>
+
+    <!-- React Entry Point -->
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </body>
+</html>
