@@ -18,6 +18,7 @@ const ProfilePage = () => {
     bio: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
 
   // Initialize form with user data
@@ -40,6 +41,19 @@ const ProfilePage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Live-validate password fields
+    if (name === 'newPassword' || name === 'confirmPassword') {
+      const newPassword = name === 'newPassword' ? value : formData.newPassword;
+      const confirmPassword = name === 'confirmPassword' ? value : formData.confirmPassword;
+      if (newPassword && newPassword.length < 6) {
+        setPasswordError('Password must be at least 6 characters');
+      } else if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+        setPasswordError("New passwords don't match");
+      } else {
+        setPasswordError('');
+      }
+    }
   };
 
   const handleFileChange = (e) => {
@@ -48,18 +62,28 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      alert("New passwords don't match!");
-      return;
+    // Final validation
+    if (formData.newPassword) {
+      if (formData.newPassword.length < 6) {
+        setPasswordError('Password must be at least 6 characters');
+        return;
+      }
+      if (formData.newPassword !== formData.confirmPassword) {
+        setPasswordError("New passwords don't match");
+        return;
+      }
     }
 
     try {
       setIsSubmitting(true);
       await updateUserProfile(formData);
       setEditMode(false);
+      // clear sensitive fields
+      setFormData(prev => ({ ...prev, password: '', newPassword: '', confirmPassword: '' }));
+      setPasswordError('');
     } catch (error) {
-      console.error("Profile update failed:", error);
-      alert("Failed to update profile. Please try again.");
+      console.error('Profile update failed:', error);
+      alert('Failed to update profile. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -159,8 +183,8 @@ const ProfilePage = () => {
                   </button>
                   <button
                     onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg font-medium flex items-center gap-2"
+                    disabled={isSubmitting || Boolean(passwordError)}
+                    className={`px-6 py-2 ${isSubmitting || passwordError ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg font-medium flex items-center gap-2`}
                   >
                     {isSubmitting ? (
                       <>
@@ -378,6 +402,9 @@ const ProfilePage = () => {
                         onChange={handleInputChange}
                         className="mt-1 block w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:bg-white"
                       />
+                        {passwordError && (
+                          <p className="text-sm text-red-600 mt-2">{passwordError}</p>
+                        )}
                     </div>
                   </div>
                 </div>

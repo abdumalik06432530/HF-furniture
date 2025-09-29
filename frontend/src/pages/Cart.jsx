@@ -76,7 +76,9 @@ const Cart = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-red-500 text-sm sm:text-base">Product not found</div>
+                  <div className="text-gray-600 text-sm sm:text-base">
+                    Product unavailable — it may have been removed. Try browsing our catalog.
+                  </div>
                 )}
 
                 <div className="flex items-center gap-4 sm:gap-6">

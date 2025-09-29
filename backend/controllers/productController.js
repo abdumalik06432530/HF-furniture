@@ -138,6 +138,29 @@ const removeProduct = async (req, res) => {
   }
 };
 
+// Update product quantity
+const updateProductQuantity = async (req, res) => {
+  try {
+    const { id, quantity } = req.body;
+    if (!id) return res.status(400).json({ success: false, message: 'Product ID is required.' });
+    if (quantity === undefined || quantity === null) return res.status(400).json({ success: false, message: 'Quantity is required.' });
+
+    const q = parseInt(quantity, 10);
+    if (Number.isNaN(q) || q < 0) return res.status(400).json({ success: false, message: 'Quantity must be a non-negative integer.' });
+
+    const product = await productModel.findById(id);
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
+
+    product.quantity = q;
+    await product.save();
+
+    res.json({ success: true, message: 'Quantity updated successfully.', product });
+  } catch (error) {
+    console.error('Error updating product quantity:', error);
+    res.status(500).json({ success: false, message: 'Failed to update quantity.' });
+  }
+};
+
 // Get single product details
 const singleProduct = async (req, res) => {
   try {
@@ -163,3 +186,4 @@ const singleProduct = async (req, res) => {
 };
 
 export { addProduct, listProducts, removeProduct, singleProduct };
+export { updateProductQuantity };

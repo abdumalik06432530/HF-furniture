@@ -15,9 +15,7 @@ orderRouter.post('/delete',adminAuth,deleteOrder)
 
 // Payment Features
 // Accept optional bank statement file under field name 'bankStatement'
-orderRouter.post('/place', upload.single('bankStatement'), authUser, placeOrder)
-orderRouter.post('/stripe',authUser,placeOrderStripe)
-orderRouter.post('/razorpay',authUser,placeOrderRazorpay)
+
 
 // User Feature 
 orderRouter.post('/userorders',authUser,userOrders)

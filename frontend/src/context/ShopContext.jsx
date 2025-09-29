@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import sanitizeMessage from '../utils/sanitizeMessage';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -31,7 +32,7 @@ const ShopContextProvider = (props) => {
     //   }
     // } catch (error) {
     //   console.error(error);
-    //   if (error.response?.status === 401) {
+  //   if (error.response?.status === 401) { 
     //     // Token expired or invalid
     //     localStorage.removeItem("token");
     //     setToken("");
@@ -46,6 +47,8 @@ const ShopContextProvider = (props) => {
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
+          // prefer Authorization header but keep legacy token header for compatibility
+          Authorization: token ? `Bearer ${token}` : undefined,
           token,
         },
       };
@@ -56,15 +59,14 @@ const ShopContextProvider = (props) => {
       formDataToSend.append("phone", formData.phone || "");
       formDataToSend.append("address", formData.address || "");
       formDataToSend.append("bio", formData.bio || "");
-      if (formData.password)
-        formDataToSend.append("password", formData.password);
+      // If the user provided a new password, send it as `password` (backend expects `password`)
       if (formData.newPassword)
-        formDataToSend.append("newPassword", formData.newPassword);
+        formDataToSend.append("password", formData.newPassword);
       if (formData.profilePhoto)
         formDataToSend.append("profilePhoto", formData.profilePhoto);
 
-      const response = await axios.put(
-        backendUrl + "/api/user/profile",
+      const response = await axios.post(
+        backendUrl + "/api/user/profile/update",
         formDataToSend,
         config
       );
@@ -74,8 +76,8 @@ const ShopContextProvider = (props) => {
         toast.success("Profile updated successfully");
         return response.data;
       } else {
-        toast.error(response.data.message);
-        throw new Error(response.data.message);
+        toast.error(sanitizeMessage(response.data.message));
+  throw new Error(sanitizeMessage(response.data.message));
       }
     } catch (error) {
       console.error(error);
@@ -109,7 +111,7 @@ const ShopContextProvider = (props) => {
         await axios.post(
           backendUrl + "/api/cart/add",
           { itemId, size },
-          { headers: { token } }
+          { headers: { Authorization: `Bearer ${token}`, token } }
         );
       } catch (error) {
         console.log(error);
@@ -144,7 +146,7 @@ const ShopContextProvider = (props) => {
         await axios.post(
           backendUrl + "/api/cart/update",
           { itemId, size, quantity },
-          { headers: { token } }
+          { headers: { Authorization: `Bearer ${token}`, token } }
         );
       } catch (error) {
         console.log(error);
@@ -187,11 +189,10 @@ const ShopContextProvider = (props) => {
 
   const getUserCart = async (token) => {
     try {
-      const response = await axios.get(
-        backendUrl + "/api/cart/get",
-        {},
-        { headers: { token } }
-      );
+      const t = token || this.token || token;
+      const response = await axios.get(backendUrl + "/api/cart/get", {
+        headers: { Authorization: t ? `Bearer ${t}` : undefined, token: t },
+      });
       if (response.data.success) {
         setCartItems(response.data.cartData);
       }

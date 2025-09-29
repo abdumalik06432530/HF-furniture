@@ -2,11 +2,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
+import sanitizeMessage from '../utils/sanitizeMessage';
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredList, setFilteredList] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editingQuantity, setEditingQuantity] = useState('');
 
   const fetchList = async () => {
     try {
@@ -16,7 +19,7 @@ const List = ({ token }) => {
         setList(products);
         setFilteredList(products);
       } else {
-        toast.error(response.data.message);
+        toast.error(sanitizeMessage(response.data.message));
       }
     } catch (error) {
       console.error(error);
@@ -37,11 +40,37 @@ const List = ({ token }) => {
         toast.success(response.data.message);
         fetchList();
       } else {
-        toast.error(response.data.message);
+        toast.error(sanitizeMessage(response.data.message));
       }
     } catch (error) {
       console.error(error);
       toast.error(error.message);
+    }
+  };
+
+  const startEdit = (id, currentQuantity) => {
+    setEditingId(id);
+    setEditingQuantity(String(currentQuantity ?? 0));
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingQuantity('');
+  };
+
+  const saveQuantity = async (id) => {
+    try {
+      const response = await axios.post(`${backendUrl}/api/product/update-quantity`, { id, quantity: editingQuantity }, { headers: { Authorization: `Bearer ${token}` } });
+      if (response.data.success) {
+        toast.success(sanitizeMessage(response.data.message) || 'Quantity updated');
+        cancelEdit();
+        fetchList();
+      } else {
+        toast.error(sanitizeMessage(response.data.message));
+      }
+    } catch (error) {
+      console.error('Failed to update quantity', error);
+      toast.error(error.message || 'Failed to update quantity');
     }
   };
 
@@ -107,16 +136,35 @@ const List = ({ token }) => {
               {item.name}
             </p>
             <p className="text-sm text-gray-600 capitalize">{item.category}</p>
-            <p className="text-sm text-gray-700 font-medium">
-              {item.quantity ?? <span className="text-red-500">Out of Stock</span>}
-            </p>
-            <button
-              onClick={() => removeProduct(item._id)}
-              className="text-red-500 hover:text-red-700 text-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 hover:bg-red-50 rounded-lg py-2"
-              title="Remove Product"
-            >
-              <span>🗑️</span>
-            </button>
+            <div className="flex items-center gap-3">
+              {editingId === item._id ? (
+                <>
+                  <input
+                    type="number"
+                    min={0}
+                    value={editingQuantity}
+                    onChange={(e) => setEditingQuantity(e.target.value)}
+                    className="w-20 px-3 py-1 border border-gray-200 rounded-md"
+                  />
+                  <button onClick={() => saveQuantity(item._id)} className="px-3 py-1 bg-green-600 text-white rounded-lg">Save</button>
+                  <button onClick={cancelEdit} className="px-3 py-1 bg-gray-200 rounded-lg">Cancel</button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-gray-700 font-medium mr-4">
+                    {item.quantity ?? <span className="text-red-500">Out of Stock</span>}
+                  </p>
+                  <button onClick={() => startEdit(item._id, item.quantity)} className="px-3 py-1 bg-indigo-600 text-white rounded-lg mr-2">Edit</button>
+                  <button
+                    onClick={() => removeProduct(item._id)}
+                    className="text-red-500 hover:text-red-700 text-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 hover:bg-red-50 rounded-lg py-2"
+                    title="Remove Product"
+                  >
+                    <span>🗑️</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         ))}
 

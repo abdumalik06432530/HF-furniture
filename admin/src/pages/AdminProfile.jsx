@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 
 const AdminProfile = ({ token }) => {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [passwordError, setPasswordError] = useState('');
 
   const fetchProfile = useCallback(async () => {
     if (!token) return;
@@ -17,7 +18,7 @@ const AdminProfile = ({ token }) => {
       });
       if (res.data.success) {
         const { user } = res.data;
-        setForm({ name: user.name || '', email: user.email || '', password: '' });
+        setForm({ name: user.name || '', email: user.email || '', password: '', confirmPassword: '' });
       } else {
         toast.error(res.data.message || 'Failed to fetch profile');
       }
@@ -31,13 +32,39 @@ const AdminProfile = ({ token }) => {
 
   useEffect(() => { fetchProfile(); }, [token, fetchProfile]);
 
-  const onChange = (e) => setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+    if (name === 'password' || name === 'confirmPassword') {
+      const pw = name === 'password' ? value : form.password;
+      const cpw = name === 'confirmPassword' ? value : form.confirmPassword;
+      if (pw && pw.length < 6) setPasswordError('Password must be at least 6 characters');
+      else if (pw && cpw && pw !== cpw) setPasswordError("New passwords don't match");
+      else setPasswordError('');
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const payload = { ...form };
+      // Validate passwords client-side if a new password was entered
+      if (payload.password) {
+        if (payload.password !== payload.confirmPassword) {
+          toast.error('New password and confirm password do not match');
+          setLoading(false);
+          return;
+        }
+        // Optional: enforce minimum length
+        if (payload.password.length < 6) {
+          toast.error('Password must be at least 6 characters');
+          setLoading(false);
+          return;
+        }
+      }
+      // Do not send confirmPassword to backend
+      delete payload.confirmPassword;
       // Do not send empty password
       if (!payload.password) delete payload.password;
       const res = await axios.post(`${backendUrl}/api/user/profile/update`, payload, {
@@ -73,7 +100,12 @@ const AdminProfile = ({ token }) => {
           <input name="password" value={form.password} onChange={onChange} type="password" className="w-full mt-1 p-2 border rounded" />
         </div>
         <div>
-          <button className={`px-4 py-2 bg-indigo-600 text-white rounded ${loading ? 'opacity-60' : ''}`} disabled={loading}>
+          <label className="text-sm font-medium">Confirm New Password</label>
+          <input name="confirmPassword" value={form.confirmPassword} onChange={onChange} type="password" className="w-full mt-1 p-2 border rounded" />
+          {passwordError && <p className="text-sm text-red-600 mt-2">{passwordError}</p>}
+        </div>
+        <div>
+          <button className={`px-4 py-2 bg-indigo-600 text-white rounded ${loading || passwordError ? 'opacity-60 cursor-not-allowed' : ''}`} disabled={loading || Boolean(passwordError)}>
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
         </div>

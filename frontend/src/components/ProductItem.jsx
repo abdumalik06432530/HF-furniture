@@ -7,7 +7,7 @@ const ProductItem = ({ id, image = [], name, price, nameClassName = '', imageCla
 
   return (
     <Link onClick={() => scrollTo(0, 0)} className="text-gray-700 cursor-pointer group w-48" to={`/product/${id}`}>
-      <div className={`overflow-hidden rounded-lg bg-white flex items-center justify-center p-2 ${imageClassName}`}>
+      <div className={`overflow-hidden rounded-lg bg-white flex items-center justify-center p-2 ${imageClassName} mx-5`}>
         {image[0] ? (
           <img
             className="max-h-44 w-full object-contain transition-transform duration-500 group-hover:scale-105"

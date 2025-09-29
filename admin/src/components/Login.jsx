@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { backendUrl } from '../config';
 import { toast } from 'react-toastify';
+import sanitizeMessage from '../utils/sanitizeMessage';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -17,7 +18,8 @@ const Login = ({ setToken }) => {
     setIsLoading(true);
     
     try {
-  const response = await axios.post(`${backendUrl}/api/user/admin`, {
+      // Use regular login endpoint so DB-created admins can login
+      const response = await axios.post(`${backendUrl}/api/user/login`, {
         email,
         password,
       });
@@ -30,11 +32,11 @@ const Login = ({ setToken }) => {
   // Navigate to root; App.jsx will render the proper dashboard based on token role
   navigate('/');
       } else {
-        toast.error(response.data.message);
+        toast.error(sanitizeMessage(response.data.message));
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+  toast.error(sanitizeMessage(error.response?.data?.message) || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -72,6 +74,9 @@ const Login = ({ setToken }) => {
             />
           </div>
           {/* Only admin login allowed, role selection removed */}
+          <div className="text-center mt-4">
+            <a href="/register" className="text-sm text-indigo-600 hover:underline">Create admin account</a>
+          </div>
           <button 
             className={`w-full py-3 px-4 ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-medium rounded-lg shadow-md transition duration-200 flex items-center justify-center`}
             type="submit"

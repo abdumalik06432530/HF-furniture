@@ -48,7 +48,7 @@ const Orders = () => {
 
         setOrderData(allOrdersItem.reverse());
       } else {
-        throw new Error(response.data.message || 'Failed to load orders');
+        throw new Error(sanitizeMessage(response.data.message) || 'Failed to load orders');
       }
     } catch (error) {
       console.error('Error loading orders:', error);

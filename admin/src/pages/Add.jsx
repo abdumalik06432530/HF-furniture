@@ -3,6 +3,7 @@ import { assets } from "../assets/assets";
 import axios from "axios";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
+import sanitizeMessage from '../utils/sanitizeMessage';
 
 
 const Add = ({ token }) => {
@@ -83,11 +84,11 @@ const Add = ({ token }) => {
         setCategory("");
         setSubCategory("");
       } else {
-        toast.error(response.data.message);
+        toast.error(sanitizeMessage(response.data.message));
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      toast.error(sanitizeMessage(error.response?.data?.message) || error.message);
     }
   };
 

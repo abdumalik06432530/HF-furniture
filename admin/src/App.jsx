@@ -8,6 +8,7 @@ import Dashboard from "./pages/dashboard";
 import Orders from "./pages/Orders";
 import AdminProfile from "./pages/AdminProfile";
 import Login from "./components/Login";
+import AdminRegister from "./components/AdminRegister";
 // import SuperAdminDashboard from "./pages/superAdmin/superadmin";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,7 +29,10 @@ const App = () => {
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer />
       {token === "" ? (
-        <Login setToken={setToken} />
+        <Routes>
+          <Route path="/register" element={<AdminRegister setToken={setToken} />} />
+          <Route path="/*" element={<Login setToken={setToken} />} />
+        </Routes>
       ) : (
         <>
           <Navbar setToken={setToken} />

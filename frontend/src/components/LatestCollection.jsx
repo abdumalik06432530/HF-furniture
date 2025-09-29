@@ -1,19 +1,80 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValue,
+  useVelocity,
+  useAnimationFrame,
+} from "framer-motion";
+// small local wrap helper to avoid external dependency
+function wrap(min, max, v) {
+  const range = max - min;
+  return ((v - min) % range + range) % range + min;
+}
 
 const LatestCollection = () => {
-  const data = useContext(ShopContext);
   const { products } = useContext(ShopContext);
-
   const [latestProducts, setLatestProducts] = useState([]);
-
-  console.log(data);
 
   useEffect(() => {
     setLatestProducts(products.slice(0, 10));
   }, [products]);
+
+  function ParallaxText() {
+    const baseVelocity = -5; // Negative for leftward movement
+    const baseX = useMotionValue(0);
+    const { scrollY } = useScroll();
+    const scrollVelocity = useVelocity(scrollY);
+    const smoothVelocity = useSpring(scrollVelocity, {
+      damping: 50,
+      stiffness: 400,
+    });
+    const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
+      clamp: false,
+    });
+
+    // Adjust wrap values for horizontal scrolling
+  // Duplicate items so we can scroll a full set and loop back seamlessly
+  const items = latestProducts.concat(latestProducts);
+  // Wrap between -50% and 0% so the second copy replaces the first
+  const x = useTransform(baseX, (v) => `${wrap(-50, 0, v)}%`);
+
+    const directionFactor = useRef(1);
+    useAnimationFrame((t, delta) => {
+      let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+
+      if (velocityFactor.get() < 0) {
+        directionFactor.current = -1;
+      } else if (velocityFactor.get() > 0) {
+        directionFactor.current = 1;
+      }
+
+      moveBy += directionFactor.current * moveBy * velocityFactor.get();
+      baseX.set(baseX.get() + moveBy);
+    });
+
+    return (
+      <div className="parallax w-full overflow-hidden">
+        <motion.div className="scroller flex flex-nowrap" style={{ x }}>
+          {items.map((item, index) => (
+            <div key={index} className="flex-none inline-block mr-4">
+              <ProductItem
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                price={item.price}
+              />
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-10">
@@ -25,17 +86,9 @@ const LatestCollection = () => {
         </p>
       </div>
 
-      {/* Rendering Products */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {latestProducts.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
+      {/* Rendering Products: keep all items on one horizontal line */}
+      <div className="overflow-hidden">
+        <ParallaxText />
       </div>
     </div>
   );

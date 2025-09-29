@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import sanitizeMessage from '../utils/sanitizeMessage';
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,8 +21,20 @@ const Login = () => {
     setIsLoading(true);
 
     // Basic client-side validation
-    if (!email || !password || (currentState === "Sign Up" && (!name || !phone))) {
+    if (!email || !password || (currentState === "Sign Up" && (!name || !phone || !confirm))) {
       toast.error("Please fill in all required fields");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      setIsLoading(false);
+      return;
+    }
+
+    if (currentState === "Sign Up" && password !== confirm) {
+      toast.error("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -47,7 +61,12 @@ const Login = () => {
             : "Logged in successfully!"
         );
       } else {
-        toast.error(response.data.message);
+        // For login, show a generic message to avoid exposing raw backend phrases
+        if (currentState === 'Login') {
+          toast.error('Invalid email or password');
+        } else {
+          toast.error(sanitizeMessage(response.data.message));
+        }
       }
     } catch (error) {
       console.error("Error during authentication:", error);
@@ -118,6 +137,16 @@ const Login = () => {
             className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
             required
           />
+          {currentState === "Sign Up" && (
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              placeholder="Confirm Password"
+              className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+              required
+            />
+          )}
         </div>
 
         {/* Links */}
