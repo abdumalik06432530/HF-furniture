@@ -18,6 +18,10 @@ orderRouter.post('/delete',adminAuth,deleteOrder)
 
 
 // User Feature 
+// Place order (supports form-data with optional 'bankStatement' file)
+orderRouter.post('/place', authUser, upload.single('bankStatement'), placeOrder)
+
+// User Feature 
 orderRouter.post('/userorders',authUser,userOrders)
 
 // verify payment

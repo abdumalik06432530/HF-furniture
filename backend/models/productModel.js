@@ -10,6 +10,7 @@ const productSchema = new mongoose.Schema(
     subCategory: { type: String, required: true },
     colors: { type: [String], required: true },
     quantity: { type: Number, required: true },
+  bestseller: { type: Boolean, default: false },
     image: { type: [String], default: [] },
     date: { type: Date, default: Date.now },
     createdBy: {

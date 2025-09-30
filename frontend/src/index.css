@@ -72,3 +72,57 @@ html, body { background-color: var(--bg); color: var(--text); }
 
 .border-gray-100, .border-gray-200, .border-gray-300 { border-color: var(--border) !important; }
 .hover\:bg-gray-50:hover { background-color: var(--surface-1) !important; }
+
+/* Gradient animation variables and keyframes (converted from @theme inline) */
+:root {
+  --animate-first: moveVertical 30s ease infinite;
+  --animate-second: moveInCircle 20s reverse infinite;
+  --animate-third: moveInCircle 40s linear infinite;
+  --animate-fourth: moveHorizontal 40s ease infinite;
+  --animate-fifth: moveInCircle 20s ease infinite;
+}
+
+@keyframes moveHorizontal {
+  0% { transform: translateX(-50%) translateY(-10%); }
+  50% { transform: translateX(50%) translateY(10%); }
+  100% { transform: translateX(-50%) translateY(-10%); }
+}
+
+@keyframes moveInCircle {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes moveVertical {
+  0% { transform: translateY(-50%); }
+  50% { transform: translateY(50%); }
+  100% { transform: translateY(-50%); }
+}
+
+/* helper animation classes */
+.anim-first { animation: var(--animate-first); }
+.anim-second { animation: var(--animate-second); }
+.anim-third { animation: var(--animate-third); }
+.anim-fourth { animation: var(--animate-fourth); }
+.anim-fifth { animation: var(--animate-fifth); }
+
+/* background gradient wrapper */
+.bg-gradient-anim {
+  background: linear-gradient(120deg, rgba(58,123,213,0.12), rgba(123,58,213,0.08));
+  position: relative; /* was invalid 'flex' in provided snippet */
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+  padding: 0px;
+  margin: 0px;
+}
+
+/* fade-in-up utility */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 600ms ease forwards;
+}

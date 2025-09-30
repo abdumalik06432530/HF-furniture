@@ -83,7 +83,8 @@ const addProduct = async (req, res) => {
       category,
       subCategory,
       colors: parsedColors,
-      quantity: parseInt(quantity),
+        quantity: parseInt(quantity),
+        bestseller: req.body.bestseller === 'true' || req.body.bestseller === true,
       image: imagesUrl,
       date: new Date(),
       // If adminUser exists use its _id, otherwise leave createdBy undefined (superadmin static create)
@@ -103,7 +104,9 @@ const addProduct = async (req, res) => {
 // List all products
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({});
+      const filter = {};
+      if (req.query.bestseller === 'true') filter.bestseller = true;
+      const products = await productModel.find(filter);
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error listing products:", error);
