@@ -9,36 +9,36 @@ const Home = () => {
   return (
     <div className="bg-white">
       {/* Hero Section - Full-bleed, flush to top with increased vertical size */}
-      <section className="min-h-screen flex items-center justify-center py-24 px-4 sm:px-6 lg:px-12 snap-start">
-        <div className="max-w-7xl mx-auto animate-fade-in-up">
+      <section className="min-h-screen flex items-center justify-center m-0 p-0">
+        <div className="w-full h-full">
           <Hero />
         </div>
       </section>
 
       {/* Latest Collection Section */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 snap-start border-t border-gray-200">
-        <div className="max-w-7xl mx-auto animate-slide-in">
+      <section className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-12 border-t border-gray-200">
+        <div className="w-full mx-auto">
           <LatestCollection />
         </div>
       </section>
 
       {/* Best Seller Section */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 snap-start bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto animate-slide-in">
+      <section className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-12 bg-white border-t border-gray-200">
+        <div className="w-full mx-auto">
           <BestSeller />
         </div>
       </section>
 
       {/* Our Policy Section */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 snap-start border-t border-gray-200">
-        <div className="max-w-7xl mx-auto animate-slide-in">
+      <section className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-12 border-t border-gray-200">
+        <div className="w-full mx-auto">
           <OurPolicy />
         </div>
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 snap-start bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto animate-slide-in">
+      <section className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-12 bg-white border-t border-gray-200">
+        <div className="w-full mx-auto">
           <NewsletterBox />
         </div>
       </section>

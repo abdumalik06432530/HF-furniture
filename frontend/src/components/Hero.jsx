@@ -1,32 +1,37 @@
-"use client";
-import React from "react";
-import BackgroundGradientAnimation from "../ui/background-gradient-animation"; // Adjust the import path as needed
+import React from 'react';
+import { BackgroundGradientAnimation } from '../ui/background-gradient-animation';
 
 const Hero = () => {
   return (
-    <div className="w-full h-screen m-0 p-0 flex flex-col overflow-hidden">
-      <BackgroundGradientAnimation className="w-full h-full m-0 p-0 flex items-start justify-start">
-        <div className="relative z-10 w-full flex flex-col items-start justify-start py-12 px-4 sm:px-8">
-          <div className="text-white">
-            <div className="flex items-center gap-3">
-              <p className="w-10 md:w-14 h-[2px] bg-white"></p>
-              <p className="font-medium text-sm md:text-lg uppercase tracking-wider">
-                Our Bestsellers
-              </p>
-            </div>
-            <h1 className="prata-regular text-4xl sm:text-5xl lg:text-6xl leading-relaxed mt-4 sm:mt-6">
-              Latest Arrivals
-            </h1>
-            <div className="flex items-center gap-3 mt-6">
-              <p className="font-semibold text-sm md:text-lg uppercase tracking-wider transition-colors duration-300 hover:text-blue-300 cursor-pointer">
-                Shop Now
-              </p>
-              <p className="w-10 md:w-14 h-[1px] bg-white"></p>
-            </div>
+    <BackgroundGradientAnimation>
+      <div className="relative z-10 w-full h-screen flex items-center justify-center px-6 sm:px-12 text-white">
+        <div className="max-w-3xl text-center">
+          {/* Section Label */}
+          <div className="flex justify-center items-center gap-4 mb-4">
+            <span className="w-12 h-[2px] bg-white/60"></span>
+            <span className="uppercase text-sm sm:text-base tracking-widest text-white/80">
+              Our Bestsellers
+            </span>
+            <span className="w-12 h-[2px] bg-white/60"></span>
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="prata-regular text-4xl sm:text-5xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-blue-300 via-blue-100 to-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
+            Discover the Future of Style
+          </h1>
+
+          {/* Buttons */}
+          <div className="mt-10 flex justify-center gap-6">
+            <button className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-full font-semibold uppercase text-sm tracking-wider hover:opacity-90 transition-shadow shadow-md hover:shadow-xl">
+              Shop Now
+            </button>
+            <button className="border border-white/70 text-white px-6 py-3 rounded-full font-semibold uppercase text-sm tracking-wider hover:bg-white hover:text-blue-600 transition">
+              Learn More
+            </button>
           </div>
         </div>
-      </BackgroundGradientAnimation>
-    </div>
+      </div>
+    </BackgroundGradientAnimation>
   );
 };
 
