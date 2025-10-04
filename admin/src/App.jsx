@@ -7,6 +7,7 @@ import List from "./pages/List";
 import Dashboard from "./pages/dashboard";
 import Orders from "./pages/Orders";
 import AdminProfile from "./pages/AdminProfile";
+import Users from "./pages/Users";
 import Login from "./components/Login";
 import AdminRegister from "./components/AdminRegister";
 // import SuperAdminDashboard from "./pages/superAdmin/superadmin";
@@ -49,6 +50,7 @@ const App = () => {
                   path="/dashboard"
                   element={<Dashboard token={token} />}
                 />
+                <Route path="/users" element={<Users token={token} />} />
               </Routes>
             </div>
           </div>

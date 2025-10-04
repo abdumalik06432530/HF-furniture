@@ -91,10 +91,21 @@ const addProduct = async (req, res) => {
       ...(adminUser && { createdBy: adminUser._id }),
     };
 
-    const product = new productModel(productData);
-    await product.save();
+      // Check for existing product by name (case-insensitive)
+      const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const nameKey = name ? name.toString().trim() : '';
+      const existing = nameKey
+        ? await productModel.findOne({ name: { $regex: `^${escapeRegex(nameKey)}$`, $options: 'i' } })
+        : null;
 
-    res.json({ success: true, message: "Product added successfully." });
+      if (existing) {
+        return res.status(400).json({ success: false, message: 'Product with this name already exists.' });
+      }
+
+      const product = new productModel(productData);
+      await product.save();
+
+      res.json({ success: true, message: "Product added successfully.", product });
   } catch (error) {
     console.error("Error adding product:", error.message || error);
     res.status(500).json({ success: false, message: "Failed to add product." });
@@ -106,7 +117,7 @@ const listProducts = async (req, res) => {
   try {
       const filter = {};
       if (req.query.bestseller === 'true') filter.bestseller = true;
-      const products = await productModel.find(filter);
+      const products = await productModel.find(filter).populate({ path: 'lastEditedBy', select: 'name email' });
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error listing products:", error);
@@ -154,8 +165,19 @@ const updateProductQuantity = async (req, res) => {
     const product = await productModel.findById(id);
     if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
 
-    product.quantity = q;
-    await product.save();
+  const previousQuantity = product.quantity ?? 0;
+  product.quantity = q;
+  // record delta
+  product.lastQuantityDelta = q - previousQuantity;
+  // record last editor (from auth middleware: req.user or req.admin)
+  const tokenPayload = req.user || req.admin || {};
+  const userIdFromAuth = tokenPayload.id || tokenPayload._id || tokenPayload.userId;
+  if (userIdFromAuth) product.lastEditedBy = userIdFromAuth;
+  product.lastEditedAt = new Date();
+  // record edit history (what changed)
+  const changes = { quantity: { from: previousQuantity, to: q } };
+  product.editHistory.push({ editedBy: userIdFromAuth || null, editedAt: new Date(), changes });
+  await product.save();
 
     res.json({ success: true, message: 'Quantity updated successfully.', product });
   } catch (error) {

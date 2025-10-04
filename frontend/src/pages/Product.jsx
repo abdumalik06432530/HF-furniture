@@ -11,15 +11,12 @@ const Product = () => {
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
 
-  const manualColors = ['red', 'blue', 'green', 'black', 'white'];
-
   useEffect(() => {
     const fetchProductData = () => {
       const product = products.find(item => item._id === productId);
       if (product) {
         const modifiedProduct = {
           ...product,
-          colors: manualColors,
           description: product.description || "This is a premium product crafted with high-quality materials, designed to offer both style and durability."
         };
         setProductData(modifiedProduct);
@@ -29,6 +26,8 @@ const Product = () => {
         }
         if (modifiedProduct.colors && modifiedProduct.colors.length > 0) {
           setSelectedColor(modifiedProduct.colors[0]);
+        } else {
+          setSelectedColor('');
         }
       }
     };
@@ -124,56 +123,58 @@ const Product = () => {
             </div>
 
             {/* Color Selector */}
-            <div className="mb-20">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Select Color</h3>
-              <div className="flex flex-wrap gap-3">
-                {productData.colors.map((color, index) => (
-                  <div key={index} className="relative group">
-                    <input
-                      type="radio"
-                      id={`color-${index}`}
-                      name="color"
-                      value={color}
-                      checked={selectedColor === color}
-                      onChange={() => setSelectedColor(color)}
-                      className="hidden peer"
-                    />
-                    <label
-                      htmlFor={`color-${index}`}
-                      className={`flex items-center px-3 py-1 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                        selectedColor === color
-                          ? 'bg-indigo-50 border-indigo-500 text-indigo-700 font-medium shadow-md'
-                          : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-indigo-300'
-                      }`}
-                    >
-                      {getColorSwatch(color)}
-                      <span className="ml-1 capitalize text-xs sm:text-sm">{color}</span>
-                    </label>
-                    {selectedColor === color && (
-                      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow-md">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-2 w-2 text-white"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                ))}
+            {productData.colors && productData.colors.length > 0 && (
+              <div className="mb-20">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Select Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {productData.colors.map((color, index) => (
+                    <div key={index} className="relative group">
+                      <input
+                        type="radio"
+                        id={`color-${index}`}
+                        name="color"
+                        value={color}
+                        checked={selectedColor === color}
+                        onChange={() => setSelectedColor(color)}
+                        className="hidden peer"
+                      />
+                      <label
+                        htmlFor={`color-${index}`}
+                        className={`flex items-center px-3 py-1 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
+                          selectedColor === color
+                            ? 'bg-indigo-50 border-indigo-500 text-indigo-700 font-medium shadow-md'
+                            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-indigo-300'
+                        }`}
+                      >
+                        {getColorSwatch(color)}
+                        <span className="ml-1 capitalize text-xs sm:text-sm">{color}</span>
+                      </label>
+                      {selectedColor === color && (
+                        <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-2 w-2 text-white"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {selectedColor && (
+                  <p className="mt-3 text-sm text-gray-500">
+                    Selected color: <span className="font-medium capitalize">{selectedColor}</span>
+                  </p>
+                )}
               </div>
-              {selectedColor && (
-                <p className="mt-3 text-sm text-gray-500">
-                  Selected color: <span className="font-medium capitalize">{selectedColor}</span>
-                </p>
-              )}
-            </div>
+            )}
 
             {/* Add to Cart Button */}
             <button

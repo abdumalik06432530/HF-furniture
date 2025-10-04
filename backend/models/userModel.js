@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema(
     },
 
     phone: { type: String, required: true },
+  // whether the user account is active (admin can deactivate)
+  isActive: { type: Boolean, default: true },
 
     cartData: { type: Object, default: {} },
 

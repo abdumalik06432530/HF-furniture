@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import Title from '../components/Title';
 import { assets } from '../assets/assets';
@@ -46,7 +46,7 @@ const Cart = () => {
 
       <div className="space-y-6 px-4 sm:px-8 md:px-16 py-10">
         {cartData.length === 0 ? (
-          <div className="py-10 text-center text-gray-600 text-lg animate-fade-in">
+          <div className="py-10 text-center text-gray-600 text-lg">
             Your cart is empty.
           </div>
         ) : (
@@ -56,7 +56,7 @@ const Cart = () => {
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-lg p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6 animate-slide-in border border-gray-100 hover:shadow-xl transition-all duration-300"
+                className="bg-white rounded-xl shadow-lg p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6 border border-gray-100 hover:shadow-xl transition-all duration-300"
               >
                 {productData ? (
                   <div className="flex items-start gap-6 w-full">
@@ -68,9 +68,11 @@ const Cart = () => {
                     <div className="flex-1">
                       <p className="font-semibold text-gray-800 text-base sm:text-lg">{productData.name}</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-2 text-gray-700">
-                        <p className="px-3 py-1 bg-teal-100 text-teal-800 rounded-md text-sm font-medium capitalize">
-                          {item.color}
-                        </p>
+                        {item.color ? (
+                          <p className="px-3 py-1 bg-teal-100 text-teal-800 rounded-md text-sm font-medium capitalize">
+                            {item.color}
+                          </p>
+                        ) : null}
                         <p className="text-sm sm:text-base">Quantity: {item.quantity}</p>
                       </div>
                     </div>
@@ -123,26 +125,5 @@ const Cart = () => {
     </div>
   );
 };
-
-// Custom Tailwind animations
-const styles = `
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes slide-in {
-    from { opacity: 0; transform: translateX(-15px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.6s ease-out;
-  }
-
-  .animate-slide-in {
-    animation: slide-in 0.6s ease-out;
-  }
-`;
 
 export default Cart;

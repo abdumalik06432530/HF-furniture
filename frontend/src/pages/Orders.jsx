@@ -133,7 +133,13 @@ const Orders = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-2 text-gray-700">
                   <p>{currency}{item.price.toFixed(2)}</p>
                   <p>Quantity: {item.quantity}</p>
-                  <p>Color: {item.size}</p>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-3 h-3 rounded-full border`}
+                      style={{ backgroundColor: (item.color || item.size) || 'transparent' }}
+                    />
+                    <p>Color: <span className="font-medium capitalize">{(item.color || item.size) || 'N/A'}</span></p>
+                  </div>
                 </div>
                 <p className="mt-2 text-gray-600">
                   Date: <span className="text-gray-500">{new Date(item.date).toDateString()}</span>
@@ -164,26 +170,5 @@ const Orders = () => {
     </div>
   );
 };
-
-// Custom Tailwind animations
-const styles = `
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes slide-in {
-    from { opacity: 0; transform: translateX(-15px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.6s ease-out;
-  }
-
-  .animate-slide-in {
-    animation: slide-in 0.6s ease-out;
-  }
-`;
 
 export default Orders;

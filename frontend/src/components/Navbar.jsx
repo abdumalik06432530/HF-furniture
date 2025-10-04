@@ -44,7 +44,7 @@ const Navbar = () => {
   // Navigation items data
   const navItems = [
     { path: '/', label: 'HOME' },
-    { path: '/collection', label: 'COLLECTION' },
+    { path: '/collection', label: 'PRODUCTS'},
     { path: '/about', label: 'ABOUT' },
     { path: '/contact', label: 'CONTACT' },
     ...(token ? [{ path: '/orders', label: 'ORDERS' }] : [])

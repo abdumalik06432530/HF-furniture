@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import userModel from '../models/userModel.js';
 
-const authUser = (req, res, next) => {
+const authUser = async (req, res, next) => {
     try {
         let token;
 
@@ -17,8 +18,27 @@ const authUser = (req, res, next) => {
         }
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            // Attach the decoded token to req.user for downstream middlewares
-            req.user = decoded;
+            // If token is for the env-admin placeholder id, attach decoded and proceed
+            if (decoded && decoded.id === 'env-admin') {
+                req.user = decoded;
+                return next();
+            }
+
+            // Otherwise, validate the user exists and is active
+            if (!decoded || !decoded.id) {
+                return res.status(401).json({ success: false, message: 'Token invalid' });
+            }
+
+            const user = await userModel.findById(decoded.id).select('-password');
+            if (!user) {
+                return res.status(401).json({ success: false, message: 'User not found' });
+            }
+            if (user.isActive === false) {
+                return res.status(403).json({ success: false, message: 'Account disabled' });
+            }
+
+            // Attach user (and preserve role/id) for downstream handlers
+            req.user = { id: user._id.toString(), role: user.role, user };
             next();
     } catch (error) {
             if (error && error.name === 'TokenExpiredError') {

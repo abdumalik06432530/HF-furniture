@@ -148,32 +148,42 @@ const Orders = ({ token }) => {
                     </a>
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm sm:text-base font-semibold text-gray-700 mb-2">Items:</p>
-                  <div className="space-y-2">
-                    {order.items.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-100 transition-all duration-200"
-                      >
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={item.image?.[0] || "https://via.placeholder.com/40?text=No+Image"}
-                            alt={item.name}
-                            className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-md border border-gray-200"
-                          />
-                          <div>
-                            <p className="text-sm sm:text-base font-semibold text-gray-800 truncate max-w-[160px] sm:max-w-[200px]">
-                              {item.name}
-                            </p>
-                            <p className="text-sm text-gray-500">Size: {item.size}</p>
-                          </div>
-                        </div>
-                        <p className="text-sm sm:text-base font-bold text-indigo-600">×{item.quantity}</p>
+                    <div>
+                      <p className="text-sm sm:text-base font-semibold text-gray-700 mb-2">Items:</p>
+                      <div className="space-y-2">
+                        {order.items.map((item, idx) => {
+                          const displayColor = item.color || item.size || 'N/A';
+                          const swatchColor = (item.color || item.size) || '';
+                          return (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-indigo-100 transition-all duration-200"
+                            >
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={item.image?.[0] || "https://via.placeholder.com/40?text=No+Image"}
+                                  alt={item.name}
+                                  className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-md border border-gray-200"
+                                />
+                                <div>
+                                  <p className="text-sm sm:text-base font-semibold text-gray-800 truncate max-w-[160px] sm:max-w-[200px]">
+                                    {item.name}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span
+                                      className="inline-block w-4 h-4 rounded-full border"
+                                      style={{ backgroundColor: swatchColor || 'transparent' }}
+                                    />
+                                    <p className="text-sm text-gray-500">Color: <span className="font-medium capitalize">{displayColor}</span></p>
+                                  </div>
+                                </div>
+                              </div>
+                              <p className="text-sm sm:text-base font-bold text-indigo-600">×{item.quantity}</p>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
                 {order.bankStatement && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg shadow-sm">
                     <p className="text-sm sm:text-base font-semibold text-gray-700 mb-2">Bank Statement:</p>

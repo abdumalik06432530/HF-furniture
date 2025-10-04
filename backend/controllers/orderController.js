@@ -311,8 +311,17 @@ const updateStatus = async (req, res) => {
           // Only update if there is a change
           if (newQty !== currentQty) {
             product.quantity = newQty;
+            // increment sold count for delivered items
+            product.soldCount = (Number(product.soldCount) || 0) + orderedQty;
+            // record sale in edit history
+            product.editHistory = product.editHistory || [];
+            product.editHistory.push({
+              editedBy: order.userId || null,
+              editedAt: new Date(),
+              changes: { sale: { quantity: orderedQty, orderId: order._id } },
+            });
             await product.save();
-            console.log(`Updated stock for product ${product._id} (${product.name}): ${currentQty} -> ${newQty}`);
+            console.log(`Updated stock for product ${product._id} (${product.name}): ${currentQty} -> ${newQty}; sold +${orderedQty}`);
           }
         } catch (err) {
           console.error('Error updating product stock for item', item, err);

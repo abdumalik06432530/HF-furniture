@@ -11,6 +11,7 @@ const Sidebar = () => {
         <SidebarLink to="/add" icon={assets.add_icon} label="Add Items" emoji="➕" />
         <SidebarLink to="/list" icon={assets.list_icon || assets.order_icon} label="List Items" emoji="📋" />
         <SidebarLink to="/orders" icon={assets.order_icon} label="Orders" emoji="🧾" />
+        <SidebarLink to="/users" icon={assets.users_icon} label="Users" emoji="👥" />
         <SidebarLink to="/profile" icon={assets.logo} label="Profile" emoji="👤" />
       </nav>
 
@@ -46,10 +47,15 @@ const SidebarLink = ({ to, icon, label, emoji }) => {
           <span className="text-base sm:text-lg">{emoji}</span>
         )}
       </div>
-      <span className="hidden sm:block md:inline font-medium">{label}</span>
-      {/* Tooltip for mobile */}
-      <span className="absolute left-1/2 -translate-x-1/2 bottom-12 sm:hidden bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+      
+      {/* Text label - visible on medium+ screens */}
+      <span className="hidden md:inline font-medium">{label}</span>
+      
+      {/* Tooltip for mobile and small screens */}
+      <span className="absolute left-1/2 -translate-x-1/2 -top-8 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 sm:hidden">
         {label}
+        {/* Tooltip arrow */}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
       </span>
     </NavLink>
   );

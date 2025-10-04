@@ -6,7 +6,7 @@ import axios from "axios";
 
 export const ShopContext = createContext();
 
-const ShopContextProvider = (props) => {
+const ShopContextProvider = ({ children }) => {
   const currency = "";
   const delivery_fee = 10;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -20,25 +20,40 @@ const ShopContextProvider = (props) => {
 
   // Fetch user data when token changes
   const fetchUserData = async () => {
-    // if (!token) return;
-    // try {
-    //   const response = await axios.get(backendUrl + "/api/user/profile", {
-    //     headers: { token },
-    //   });
-    //   if (response.data.success) {
-    //     setUserData(response.data.user);
-    //   } else {
-    //     toast.error(response.data.message);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-  //   if (error.response?.status === 401) { 
-    //     // Token expired or invalid
-    //     localStorage.removeItem("token");
-    //     setToken("");
-    //     navigate("/login");
-    //   }
-    // }
+    if (!token) return;
+    try {
+      const response = await axios.get(backendUrl + "/api/user/profile", {
+        headers: { Authorization: token ? `Bearer ${token}` : undefined, token },
+      });
+      if (response.data.success) {
+        setUserData(response.data.user);
+      } else {
+        toast.error(response.data.message || 'Failed to fetch user');
+      }
+    } catch (error) {
+      console.error(error);
+      handleAuthError(error);
+    }
+  };
+
+  // Central handler for auth-related errors (expired/invalid token or disabled account)
+  const handleAuthError = (error) => {
+    const status = error?.response?.status;
+    const serverMessage = error?.response?.data?.message;
+    if (status === 401 || status === 403) {
+      // Remove local token and redirect to login
+      localStorage.removeItem('token');
+      setToken('');
+      setUserData(null);
+      if (status === 403) {
+        toast.error(serverMessage || 'Account disabled or access denied');
+      } else {
+        toast.error(serverMessage || 'Session expired. Please log in again.');
+      }
+      navigate('/login');
+      return true;
+    }
+    return false;
   };
 
   // Update user profile
@@ -72,7 +87,8 @@ const ShopContextProvider = (props) => {
       );
 
       if (response.data.success) {
-        // setUserData(response.data.user);
+        // update local userData so UI refreshes immediately
+        if (response.data.user) setUserData(response.data.user);
         toast.success("Profile updated successfully");
         return response.data;
       } else {
@@ -87,22 +103,20 @@ const ShopContextProvider = (props) => {
   };
 
   const addToCart = async (itemId, size) => {
-    if (!size) {
-      toast.error("Select color");
-      return;
-    }
+    // Allow adding items without explicit colors by using a default key.
+    const colorKey = size && typeof size === 'string' && size.trim() !== '' ? size : 'default';
 
     let cartData = structuredClone(cartItems);
 
     if (cartData[itemId]) {
-      if (cartData[itemId][size]) {
-        cartData[itemId][size] += 1;
+      if (cartData[itemId][colorKey]) {
+        cartData[itemId][colorKey] += 1;
       } else {
-        cartData[itemId][size] = 1;
+        cartData[itemId][colorKey] = 1;
       }
     } else {
       cartData[itemId] = {};
-      cartData[itemId][size] = 1;
+      cartData[itemId][colorKey] = 1;
     }
     setCartItems(cartData);
 
@@ -110,12 +124,14 @@ const ShopContextProvider = (props) => {
       try {
         await axios.post(
           backendUrl + "/api/cart/add",
-          { itemId, size },
+          { userId: userData?._id, itemId, Colors: colorKey },
           { headers: { Authorization: `Bearer ${token}`, token } }
         );
       } catch (error) {
         console.log(error);
-        toast.error(error.response?.data?.message || error.message);
+        if (!handleAuthError(error)) {
+          toast.error(error.response?.data?.message || error.message);
+        }
       }
     }
   };
@@ -138,19 +154,23 @@ const ShopContextProvider = (props) => {
 
   const updateQuantity = async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
-    cartData[itemId][size] = quantity;
+    const colorKey = size && typeof size === 'string' && size.trim() !== '' ? size : 'default';
+    if (!cartData[itemId]) cartData[itemId] = {};
+    cartData[itemId][colorKey] = quantity;
     setCartItems(cartData);
 
     if (token) {
       try {
         await axios.post(
           backendUrl + "/api/cart/update",
-          { itemId, size, quantity },
+          { userId: userData?._id, itemId, Colors: colorKey, quantity: Number(quantity) },
           { headers: { Authorization: `Bearer ${token}`, token } }
         );
       } catch (error) {
         console.log(error);
-        toast.error(error.response?.data?.message || error.message);
+        if (!handleAuthError(error)) {
+          toast.error(error.response?.data?.message || error.message);
+        }
       }
     }
   };
@@ -183,14 +203,18 @@ const ShopContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || error.message);
+      if (!handleAuthError(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      }
     }
   };
 
-  const getUserCart = async (token) => {
+  const getUserCart = async (maybeToken) => {
     try {
-      const t = token || this.token || token;
+      const t = maybeToken || token;
+      // Prefer sending userId as query param; backend will fallback to token if needed.
       const response = await axios.get(backendUrl + "/api/cart/get", {
+        params: { userId: userData?._id },
         headers: { Authorization: t ? `Bearer ${t}` : undefined, token: t },
       });
       if (response.data.success) {
@@ -198,18 +222,22 @@ const ShopContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || error.message);
+      if (!handleAuthError(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      }
     }
   };
 
   // Initialize on component mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     getProductsData();
 
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       setToken(storedToken);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle token changes
@@ -220,8 +248,8 @@ const ShopContextProvider = (props) => {
       fetchUserData();
     } else {
       localStorage.removeItem("token");
-      // setUserData(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const value = {
@@ -247,7 +275,7 @@ const ShopContextProvider = (props) => {
   };
 
   return (
-    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
+    <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
   );
 };
 

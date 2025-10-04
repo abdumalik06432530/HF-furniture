@@ -4,8 +4,7 @@ import axios from "axios";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
 import sanitizeMessage from '../utils/sanitizeMessage';
-
-
+import categories from '../../../shared/categories';
 const Add = ({ token }) => {
   if (!token) {
     toast.error("You are not authorized to access this page. Please log in.");
@@ -29,11 +28,7 @@ const Add = ({ token }) => {
 
   const colorOptions = ["Red", "Blue", "Green", "Black", "White"];
 
-  const subcategoryOptions = {
-    Chair: ["Ergonomic Chair", "Executive Chair", "Conference Chair"],
-    Table: ["Mango Wood Table", "Office Table", "Metal Table"],
-    Shelf: ["Wooden Shelf", "Glass Shelf", "Plastic Shelf"],
-  };
+  const subcategoryOptions = categories;
 
   useEffect(() => {
     if (category) {
@@ -217,6 +212,7 @@ const Add = ({ token }) => {
                 <option value="Chair">Chair</option>
                 <option value="Table">Table</option>
                 <option value="Shelf">Shelf</option>
+                <option value="Others">Others</option>
               </select>
             </div>
 

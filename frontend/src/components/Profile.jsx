@@ -21,6 +21,9 @@ const ProfilePage = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
 
+  // keep track whether form has unsaved changes (used for UI, not auto-save)
+  const isDirtyRef = React.useRef(false);
+
   // Initialize form with user data
   useEffect(() => {
     if (userData) {
@@ -41,6 +44,7 @@ const ProfilePage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    isDirtyRef.current = true;
 
     // Live-validate password fields
     if (name === 'newPassword' || name === 'confirmPassword') {
@@ -57,8 +61,14 @@ const ProfilePage = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, profilePhoto: e.target.files[0] }));
+    const file = e.target.files[0];
+    // Immediately update preview and mark form as dirty. Do NOT auto-save.
+    setFormData(prev => ({ ...prev, profilePhoto: file }));
+    isDirtyRef.current = true;
   };
+
+  // We intentionally do not auto-save on file select or on unmount.
+  // Saving must be triggered explicitly by clicking the "Save Changes" button.
 
   const handleSubmit = async (e) => {
     e.preventDefault();

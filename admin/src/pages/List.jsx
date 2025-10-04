@@ -138,12 +138,32 @@ const List = ({ token }) => {
               <div className="sm:hidden ml-3">
                 <p className="text-sm sm:text-base font-semibold text-gray-900 truncate">{item.name}</p>
                 <p className="text-xs text-gray-600 capitalize">{item.category}</p>
+                {item.lastEditedBy && item.lastEditedAt && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Edited by {item.lastEditedBy.name} • {new Date(item.lastEditedAt).toLocaleString()}
+                    {typeof item.lastQuantityDelta === 'number' && (
+                      <span className={`ml-2 font-semibold ${item.lastQuantityDelta > 0 ? 'text-green-600' : item.lastQuantityDelta < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                        {item.lastQuantityDelta > 0 ? `+${item.lastQuantityDelta}` : item.lastQuantityDelta}
+                      </span>
+                    )}
+                  </p>
+                )}
               </div>
             </div>
             <p className="hidden sm:block text-sm sm:text-base font-semibold text-gray-900 truncate hover:text-indigo-600 transition-colors duration-200">
               {item.name}
             </p>
             <p className="hidden sm:block text-xs sm:text-sm text-gray-600 capitalize">{item.category}</p>
+            {item.lastEditedBy && item.lastEditedAt && (
+              <p className="hidden sm:block text-xs text-gray-500 mt-1">
+                Edited by {item.lastEditedBy.name} • {new Date(item.lastEditedAt).toLocaleString()}
+                {typeof item.lastQuantityDelta === 'number' && (
+                  <span className={`ml-2 font-semibold ${item.lastQuantityDelta > 0 ? 'text-green-600' : item.lastQuantityDelta < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                    {item.lastQuantityDelta > 0 ? `+${item.lastQuantityDelta}` : item.lastQuantityDelta}
+                  </span>
+                )}
+              </p>
+            )}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
               {editingId === item._id ? (
                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

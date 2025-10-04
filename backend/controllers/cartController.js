@@ -4,12 +4,16 @@ import mongoose from "mongoose"; // Import mongoose for ObjectId validation
 // Add products to user cart
 const addToCart = async (req, res) => {
   try {
-    const { userId, itemId, Colors } = req.body;
+    // Accept userId from body, query, or authenticated token (req.user)
+    const { userId: bodyUserId, itemId, Colors } = req.body;
+    const userId = bodyUserId || req.query?.userId || req.user?.id;
 
     // Validate inputs
-    if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(itemId)) {
+    if (!userId || !mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(itemId)) {
       return res.status(400).json({ success: false, message: "Invalid userId or itemId" });
     }
+
+    // Colors can be the special key 'default' when no color is chosen
     if (!Colors || typeof Colors !== "string") {
       return res.status(400).json({ success: false, message: "Colors is required and must be a string" });
     }
@@ -48,16 +52,21 @@ const addToCart = async (req, res) => {
 // Update user cart
 const updateCart = async (req, res) => {
   try {
-    const { userId, itemId, Colors, quantity } = req.body;
+    const { userId: bodyUserId, itemId, Colors } = req.body;
+    let { quantity } = req.body;
+    const userId = bodyUserId || req.query?.userId || req.user?.id;
+
+    // Coerce quantity to number
+    quantity = Number(quantity);
 
     // Validate inputs
-    if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(itemId)) {
+    if (!userId || !mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(itemId)) {
       return res.status(400).json({ success: false, message: "Invalid userId or itemId" });
     }
     if (!Colors || typeof Colors !== "string") {
       return res.status(400).json({ success: false, message: "Colors is required and must be a string" });
     }
-    if (typeof quantity !== "number" || quantity < 0) {
+    if (Number.isNaN(quantity) || quantity < 0) {
       return res.status(400).json({ success: false, message: "Quantity must be a non-negative number" });
     }
 
@@ -98,10 +107,12 @@ const updateCart = async (req, res) => {
 // Get user cart data
 const getUserCart = async (req, res) => {
   try {
-    const { userId } = req.body;
+    // Accept userId from body, query, or authenticated token
+    const bodyUserId = req.body?.userId;
+    const userId = bodyUserId || req.query?.userId || req.user?.id;
 
     // Validate userId
-    if (!mongoose.isValidObjectId(userId)) {
+    if (!userId || !mongoose.isValidObjectId(userId)) {
       return res.status(400).json({ success: false, message: "Invalid userId" });
     }
 

@@ -3,12 +3,9 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import categories from '../../../shared/categories';
 
-const subCategoryMap = {
-  Table: ['Material', 'Office', 'Others'],
-  Chair: ['Swivel', 'Visitor', 'Others'],
-  Shelf: ['Wooden', 'Metal', 'Plastic'],
-};
+const subCategoryMap = categories;
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
@@ -114,7 +111,7 @@ const Collection = () => {
         <div className={`bg-white rounded-lg shadow-md p-3 mt-1 sm:block ${showFilter ? 'animate-slide-in' : 'hidden'} transition-all duration-500 border border-gray-100`}>
           <p className="mb-2 text-xs font-bold text-gray-900 uppercase tracking-wide border-b pb-1">Categories</p>
           <div className="flex flex-col gap-1.5">
-            {['Table', 'Chair', 'Shelf'].map((cat) => (
+            {Object.keys(subCategoryMap).map((cat) => (
               <label
                 key={cat}
                 className="flex items-center gap-2 bg-blue-50 text-blue-600 text-2xs font-semibold cursor-pointer hover:bg-blue-200 hover:text-blue-800 p-1.5 rounded-md transition-all duration-200 border border-blue-100"
