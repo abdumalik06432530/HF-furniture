@@ -73,10 +73,7 @@ const Login = ({ setToken }) => {
               minLength="6"
             />
           </div>
-          {/* Only admin login allowed, role selection removed */}
-          <div className="text-center mt-4">
-            <a href="/register" className="text-sm text-indigo-600 hover:underline">Create admin account</a>
-          </div>
+          {/* Create admin account link removed - only existing admins may log in */}
           <button 
             className={`w-full py-3 px-4 ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-medium rounded-lg shadow-md transition duration-200 flex items-center justify-center`}
             type="submit"
