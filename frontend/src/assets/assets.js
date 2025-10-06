@@ -92,7 +92,10 @@ export const assets = {
     contact_img,
     razorpay_logo,
     stripe_logo,
-    cross_icon
+    cross_icon,
+    // Backwards-compatible keys used across components
+    edit_icon: cross_icon,
+    placeholder_image: hero_img
 }
 
 export const products = [
