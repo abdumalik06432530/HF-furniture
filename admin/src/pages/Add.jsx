@@ -4,7 +4,7 @@ import axios from "axios";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
 import sanitizeMessage from '../utils/sanitizeMessage';
-import categories from '../../../shared/categories';
+import categories from '../shared/categories';
 const Add = ({ token }) => {
   if (!token) {
     toast.error("You are not authorized to access this page. Please log in.");
