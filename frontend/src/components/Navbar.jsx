@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { ThemeContext } from '../context/ThemeContext';
+import ThemeContext from '../context/themeContext';
 import { assets } from '../assets/assets';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
