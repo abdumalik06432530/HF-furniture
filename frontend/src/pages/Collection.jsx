@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
-import categories from '../../../shared/categories';
+import categories from '../shared/categories';
 
 const subCategoryMap = categories;
 
